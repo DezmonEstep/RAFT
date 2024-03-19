@@ -15,7 +15,7 @@ from utils.utils import InputPadder
 
 
 
-DEVICE = 'cuda'
+DEVICE = 'cpu'
 
 def load_image(imfile):
     img = np.array(Image.open(imfile)).astype(np.uint8)
@@ -31,9 +31,9 @@ def viz(img, flo):
     flo = flow_viz.flow_to_image(flo)
     img_flo = np.concatenate([img, flo], axis=0)
 
-    # import matplotlib.pyplot as plt
-    # plt.imshow(img_flo / 255.0)
-    # plt.show()
+    import matplotlib.pyplot as plt
+    plt.imshow(img_flo / 255.0)
+    plt.show()
 
     cv2.imshow('image', img_flo[:, :, [2,1,0]]/255.0)
     cv2.waitKey()
@@ -41,7 +41,7 @@ def viz(img, flo):
 
 def demo(args):
     model = torch.nn.DataParallel(RAFT(args))
-    model.load_state_dict(torch.load(args.model))
+    model.load_state_dict(torch.load(args.model, map_location=torch.device('cpu')))
 
     model = model.module
     model.to(DEVICE)
